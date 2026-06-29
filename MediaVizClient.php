@@ -42,7 +42,7 @@ class _TokenTrackingClient {
         $this->inner = $inner;
     }
 
-    public function request(string $url, string $method, string $accessToken, string $refreshToken, mixed $body = null): mixed {
+    public function request(string $url, string $method, string $accessToken, ?string $refreshToken, mixed $body = null): mixed {
         $mv = $this->mv;
         $onRefreshSuccess = function ($newTokens) use ($mv): void {
             $mv->setTokens($newTokens->accessToken, $newTokens->refreshToken);
@@ -146,7 +146,7 @@ class MediaVizClient {
         return $tokens;
     }
 
-    public function setTokens(string $accessToken, string $refreshToken): void {
+    public function setTokens(string $accessToken, ?string $refreshToken): void {
         $this->accessToken = $accessToken;
         $this->refreshToken = $refreshToken;
     }

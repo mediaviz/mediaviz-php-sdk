@@ -98,12 +98,6 @@ class Photos {
         return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 
-    public function getProjectThumbnail(string $tableName): mixed {
-        $this->ctx->requireTokens();
-        $path = "/api/v1/photos_project/" . rawurlencode((string)$tableName);
-        return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
-    }
-
     public function updatePhotoInProject(
         ?string $tableName = null,
         ?int $photoId = null,

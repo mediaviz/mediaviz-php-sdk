@@ -299,6 +299,59 @@ class OAuthClientTest extends TestCase
         $this->assertSame('new-refresh', $result->updatedTokens->refreshToken);
     }
 
+    public function test_request_remints_via_client_credentials_on_401_when_no_refresh_token(): void
+    {
+        // Machine-to-machine session (no refresh_token): 401 → client_credentials re-mint → retry
+        $calls = 0;
+        $tokenRequestBody = null;
+        $transport = function (string $url, string $method, array $headers, ?string $body) use (&$calls, &$tokenRequestBody): array {
+            $calls++;
+            if (str_contains($url, '/oauth/token')) {
+                $tokenRequestBody = $body;
+            }
+            return match ($calls) {
+                1 => [401, '{}'],
+                2 => [200, json_encode(['access_token' => 'cc-access', 'token_type' => 'bearer', 'expires_in' => 3600])],
+                3 => [200, json_encode(['user' => 'svc'])],
+            };
+        };
+        $client = new OAuthClient($this->config, $transport);
+
+        $result = $client->request('/me', 'GET', 'old-access', null);
+
+        $this->assertSame(['user' => 'svc'], $result->data);
+        $this->assertSame('cc-access', $result->updatedTokens->accessToken);
+        $this->assertNull($result->updatedTokens->refreshToken);
+
+        parse_str($tokenRequestBody, $params);
+        $this->assertSame('client_credentials', $params['grant_type']);
+        $this->assertArrayNotHasKey('refresh_token', $params);
+    }
+
+    public function test_request_throws_original_401_when_no_refresh_token_and_no_secret(): void
+    {
+        $config = new OAuthClientConfig(
+            baseUrl: 'https://auth.example.com',
+            clientId: 'public-client',
+            clientSecret: '',
+            redirectUri: 'https://myapp.com/callback',
+        );
+        $calls = 0;
+        $transport = function () use (&$calls): array {
+            $calls++;
+            return [401, json_encode(['error' => 'invalid_token', 'error_description' => 'expired'])];
+        };
+        $client = new OAuthClient($config, $transport);
+
+        try {
+            $client->request('/me', 'GET', 'old-access', null);
+            $this->fail('Expected OAuthError');
+        } catch (OAuthError $e) {
+            $this->assertSame(401, $e->httpStatus);
+        }
+        $this->assertSame(1, $calls); // no doomed token request was attempted
+    }
+
     public function test_request_propagates_oauth_error_when_refresh_fails_on_401(): void
     {
         $calls = 0;

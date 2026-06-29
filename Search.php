@@ -55,46 +55,44 @@ class Search {
         return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 
-    public function searchProjectPhotosText(
+    public function searchProjectPhotosParametrized(
         string $projectTableName,
-        string $searchText,
-        ?int $size = null
+        mixed $andSearchText = null,
+        mixed $orSearchText = null,
+        mixed $notSearchText = null,
+        mixed $city = null,
+        mixed $country = null,
+        mixed $state = null,
+        mixed $albums = null,
+        mixed $dateMin = null,
+        mixed $dateMax = null,
+        mixed $dateNullAnd = null,
+        mixed $dateNullOr = null,
+        ?string $ascOrDesc = null,
+        mixed $bestOfSimilarSetsOnly = null,
+        mixed $splitByTier = null,
+        mixed $lastId = null,
+        ?int $limit = null
     ): mixed {
         $this->ctx->requireTokens();
-        $path = "/api/v1/search/text/" . rawurlencode((string)$projectTableName) . "/";
-        $body = array_filter([
-            'search_text' => $searchText,
-            'size' => $size,
-        ], fn($v) => $v !== null);
-        return $this->ctx->client->request($path, 'POST', $this->ctx->accessToken, $this->ctx->refreshToken, $body)->data;
-    }
-
-    public function searchProjectPhotosNaturalLanguage(
-        string $projectTableName,
-        string $searchText,
-        ?int $size = null
-    ): mixed {
-        $this->ctx->requireTokens();
-        $path = "/api/v1/search/nl/" . rawurlencode((string)$projectTableName) . "/";
-        $body = array_filter([
-            'search_text' => $searchText,
-            'size' => $size,
-        ], fn($v) => $v !== null);
-        return $this->ctx->client->request($path, 'POST', $this->ctx->accessToken, $this->ctx->refreshToken, $body)->data;
-    }
-
-    public function searchProjectPhotosNaturalLanguageHybrid(
-        string $projectTableName,
-        string $searchText,
-        ?int $size = null,
-        ?string $blend = null,
-        ?float $minCosine = null
-    ): mixed {
-        $this->ctx->requireTokens();
-        $path = "/api/v1/search/nl_hybrid/" . rawurlencode((string)$projectTableName) . "/";
+        $path = "/api/v1/search/parametrized/" . rawurlencode((string)$projectTableName) . "/";
         $query = [];
-        if ($blend !== null) $query['blend'] = $blend;
-        if ($minCosine !== null) $query['min_cosine'] = $minCosine;
+        if ($andSearchText !== null) $query['and_search_text'] = $andSearchText;
+        if ($orSearchText !== null) $query['or_search_text'] = $orSearchText;
+        if ($notSearchText !== null) $query['not_search_text'] = $notSearchText;
+        if ($city !== null) $query['city'] = $city;
+        if ($country !== null) $query['country'] = $country;
+        if ($state !== null) $query['state'] = $state;
+        if ($albums !== null) $query['albums'] = $albums;
+        if ($dateMin !== null) $query['date_min'] = $dateMin;
+        if ($dateMax !== null) $query['date_max'] = $dateMax;
+        if ($dateNullAnd !== null) $query['date_null_and'] = $dateNullAnd;
+        if ($dateNullOr !== null) $query['date_null_or'] = $dateNullOr;
+        if ($ascOrDesc !== null) $query['asc_or_desc'] = $ascOrDesc;
+        if ($bestOfSimilarSetsOnly !== null) $query['best_of_similar_sets_only'] = $bestOfSimilarSetsOnly;
+        if ($splitByTier !== null) $query['split_by_tier'] = $splitByTier;
+        if ($lastId !== null) $query['last_id'] = $lastId;
+        if ($limit !== null) $query['limit'] = $limit;
         if ($query) {
             $pairs = [];
             foreach ($query as $k => $v) {
@@ -102,25 +100,53 @@ class Search {
             }
             $path .= '?' . implode('&', $pairs);
         }
-        $body = array_filter([
-            'search_text' => $searchText,
-            'size' => $size,
-        ], fn($v) => $v !== null);
-        return $this->ctx->client->request($path, 'POST', $this->ctx->accessToken, $this->ctx->refreshToken, $body)->data;
+        return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 
-    public function searchProjectPhotosNaturalLanguageAuto(
+    public function recallProjectPhotoIds(
+        string $projectTableName,
+        ?string $ascOrDesc = null,
+        mixed $bestOfSimilarSetsOnly = null,
+        mixed $lastId = null,
+        ?int $limit = null
+    ): mixed {
+        $this->ctx->requireTokens();
+        $path = "/api/v1/search/recall/" . rawurlencode((string)$projectTableName) . "/";
+        $query = [];
+        if ($ascOrDesc !== null) $query['asc_or_desc'] = $ascOrDesc;
+        if ($bestOfSimilarSetsOnly !== null) $query['best_of_similar_sets_only'] = $bestOfSimilarSetsOnly;
+        if ($lastId !== null) $query['last_id'] = $lastId;
+        if ($limit !== null) $query['limit'] = $limit;
+        if ($query) {
+            $pairs = [];
+            foreach ($query as $k => $v) {
+                foreach ((is_array($v) ? $v : [$v]) as $vv) $pairs[] = rawurlencode($k) . '=' . rawurlencode((string)$vv);
+            }
+            $path .= '?' . implode('&', $pairs);
+        }
+        return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
+    }
+
+    public function searchProjectPhotosNaturalLanguage(
         string $projectTableName,
         string $searchText,
         ?int $size = null,
-        ?string $blend = null,
-        ?float $minCosine = null
+        ?float $minCosine = null,
+        ?float $labelMinCosine = null,
+        ?int $labelTopK = null,
+        ?float $labelDelta = null,
+        mixed $bestOfSimilarSetsOnly = null,
+        mixed $splitByTier = null
     ): mixed {
         $this->ctx->requireTokens();
-        $path = "/api/v1/search/auto/" . rawurlencode((string)$projectTableName) . "/";
+        $path = "/api/v1/search/natural_language/" . rawurlencode((string)$projectTableName) . "/";
         $query = [];
-        if ($blend !== null) $query['blend'] = $blend;
         if ($minCosine !== null) $query['min_cosine'] = $minCosine;
+        if ($labelMinCosine !== null) $query['label_min_cosine'] = $labelMinCosine;
+        if ($labelTopK !== null) $query['label_top_k'] = $labelTopK;
+        if ($labelDelta !== null) $query['label_delta'] = $labelDelta;
+        if ($bestOfSimilarSetsOnly !== null) $query['best_of_similar_sets_only'] = $bestOfSimilarSetsOnly;
+        if ($splitByTier !== null) $query['split_by_tier'] = $splitByTier;
         if ($query) {
             $pairs = [];
             foreach ($query as $k => $v) {

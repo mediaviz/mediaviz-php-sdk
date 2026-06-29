@@ -157,7 +157,7 @@ class OAuthClient
         string $url,
         string $method,
         string $accessToken,
-        string $refreshToken,
+        ?string $refreshToken,
         mixed $body = null,
         ?callable $onRefreshSuccess = null,
     ): AuthenticatedResponse {
@@ -181,8 +181,18 @@ class OAuthClient
             );
         }
 
-        // 401: refresh and retry once; propagate OAuthError if refresh fails
-        $newTokens = $this->refreshAccessToken($refreshToken);
+        // 401: re-authenticate, then retry once.
+        // - User sessions (refresh_token present) use the refresh_token grant.
+        // - Machine-to-machine sessions (no refresh_token, client_secret configured) re-mint
+        //   via client_credentials, which issues no refresh token to rotate (RFC 6749 §4.4).
+        // - With neither a refresh_token nor a client_secret there is nothing to retry with.
+        if ($refreshToken !== null && $refreshToken !== '') {
+            $newTokens = $this->refreshAccessToken($refreshToken);
+        } elseif ($this->config->clientSecret !== '') {
+            $newTokens = $this->getClientCredentialsToken();
+        } else {
+            throw OAuthError::fromResponse($status, $responseBody);
+        }
 
         if ($onRefreshSuccess !== null) {
             ($onRefreshSuccess)($newTokens);

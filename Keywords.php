@@ -98,6 +98,21 @@ class Keywords {
         return $this->ctx->client->request($path, 'POST', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 
+    public function addCompanyToKeywordFilteringList(int $keywordListId, ?int $companyId = null): mixed {
+        $this->ctx->requireTokens();
+        $path = "/api/v1/keyword/" . rawurlencode((string)$keywordListId) . "/company";
+        $query = [];
+        if ($companyId !== null) $query['company_id'] = $companyId;
+        if ($query) {
+            $pairs = [];
+            foreach ($query as $k => $v) {
+                foreach ((is_array($v) ? $v : [$v]) as $vv) $pairs[] = rawurlencode($k) . '=' . rawurlencode((string)$vv);
+            }
+            $path .= '?' . implode('&', $pairs);
+        }
+        return $this->ctx->client->request($path, 'POST', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
+    }
+
     public function requestKeywordListExport(int $keywordListId): mixed {
         $this->ctx->requireTokens();
         $path = "/api/v1/keyword/export/" . rawurlencode((string)$keywordListId);
@@ -121,6 +136,21 @@ class Keywords {
         $path = "/api/v1/keyword/" . rawurlencode((string)$keywordListId) . "/projects";
         $query = [];
         if ($projectIds !== null) $query['project_ids'] = $projectIds;
+        if ($query) {
+            $pairs = [];
+            foreach ($query as $k => $v) {
+                foreach ((is_array($v) ? $v : [$v]) as $vv) $pairs[] = rawurlencode($k) . '=' . rawurlencode((string)$vv);
+            }
+            $path .= '?' . implode('&', $pairs);
+        }
+        return $this->ctx->client->request($path, 'DELETE', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
+    }
+
+    public function removeCompanyFromKeywordFilteringList(int $keywordListId, ?int $companyId = null): mixed {
+        $this->ctx->requireTokens();
+        $path = "/api/v1/keyword/" . rawurlencode((string)$keywordListId) . "/company";
+        $query = [];
+        if ($companyId !== null) $query['company_id'] = $companyId;
         if ($query) {
             $pairs = [];
             foreach ($query as $k => $v) {

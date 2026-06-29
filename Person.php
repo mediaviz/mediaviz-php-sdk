@@ -71,6 +71,21 @@ class Person {
         return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 
+    public function getPhotoIdsByPersons(string $projectTableName, mixed $personId = null): mixed {
+        $this->ctx->requireTokens();
+        $path = "/api/v1/person/" . rawurlencode((string)$projectTableName) . "/photos";
+        $query = [];
+        if ($personId !== null) $query['person_id'] = $personId;
+        if ($query) {
+            $pairs = [];
+            foreach ($query as $k => $v) {
+                foreach ((is_array($v) ? $v : [$v]) as $vv) $pairs[] = rawurlencode($k) . '=' . rawurlencode((string)$vv);
+            }
+            $path .= '?' . implode('&', $pairs);
+        }
+        return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
+    }
+
     public function getAllPersonsFromPhoto(string $projectTableName, int $photoId): mixed {
         $this->ctx->requireTokens();
         $path = "/api/v1/person/" . rawurlencode((string)$projectTableName) . "/photo/" . rawurlencode((string)$photoId);
