@@ -110,18 +110,19 @@ class Photoupload {
             'x-title: ' . $photo['title'],
         ];
         if (($photo['client_side_id'] ?? null) !== null) $_headers[] = 'x-client-side-id: ' . $photo['client_side_id'];
-        if (($photo['blur'] ?? null) !== null) $_headers[] = 'x-blur: ' . $photo['blur'];
-        if (($photo['colors'] ?? null) !== null) $_headers[] = 'x-colors: ' . $photo['colors'];
-        if (($photo['face_recognition'] ?? null) !== null) $_headers[] = 'x-face-recognition: ' . $photo['face_recognition'];
-        if (($photo['image_describe'] ?? null) !== null) $_headers[] = 'x-image-describe: ' . $photo['image_describe'];
-        if (($photo['image_classification'] ?? null) !== null) $_headers[] = 'x-image-classification: ' . $photo['image_classification'];
-        if (($photo['image_comparison'] ?? null) !== null) $_headers[] = 'x-image-comparison: ' . $photo['image_comparison'];
+        if (($template['blur'] ?? null) !== null) $_headers[] = 'x-blur: ' . $template['blur'];
+        if (($template['colors'] ?? null) !== null) $_headers[] = 'x-colors: ' . $template['colors'];
+        if (($template['face_recognition'] ?? null) !== null) $_headers[] = 'x-face-recognition: ' . $template['face_recognition'];
+        if (($template['image_describe'] ?? null) !== null) $_headers[] = 'x-image-describe: ' . $template['image_describe'];
+        if (($template['image_classification'] ?? null) !== null) $_headers[] = 'x-image-classification: ' . $template['image_classification'];
+        if (($template['image_comparison'] ?? null) !== null) $_headers[] = 'x-image-comparison: ' . $template['image_comparison'];
         if (($photo['size'] ?? null) !== null) $_headers[] = 'x-size: ' . $photo['size'];
         if (($photo['source_resolution_x'] ?? null) !== null) $_headers[] = 'x-source-resolution-x: ' . $photo['source_resolution_x'];
         if (($photo['source_resolution_y'] ?? null) !== null) $_headers[] = 'x-source-resolution-y: ' . $photo['source_resolution_y'];
         if (($photo['date_taken'] ?? null) !== null) $_headers[] = 'x-date-taken: ' . $photo['date_taken'];
         if (($photo['latitude'] ?? null) !== null) $_headers[] = 'x-latitude: ' . $photo['latitude'];
         if (($photo['longitude'] ?? null) !== null) $_headers[] = 'x-longitude: ' . $photo['longitude'];
+        if (($template['ocr'] ?? null) !== null) $_headers[] = 'x-ocr: ' . $template['ocr'];
         $_body = [
             'file_content' => $photo['file_content'],
             'mimetype' => $photo['mimetype'],

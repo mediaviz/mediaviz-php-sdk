@@ -103,7 +103,7 @@ class Search {
         return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 
-    public function recallProjectPhotoIds(
+    public function recallProjectPhotos(
         string $projectTableName,
         ?string $ascOrDesc = null,
         mixed $bestOfSimilarSetsOnly = null,
