@@ -179,9 +179,9 @@ class Projects {
         return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 
-    public function getProjectDataExportUploadStatus(string $projectTableName, string $modelName): mixed {
+    public function getProjectProcessStatus(string $projectTableName, string $modelName): mixed {
         $this->ctx->requireTokens();
-        $path = "/api/v1/projects/" . rawurlencode((string)$projectTableName) . "/upload_status/" . rawurlencode((string)$modelName);
+        $path = "/api/v1/projects/" . rawurlencode((string)$projectTableName) . "/process_status/" . rawurlencode((string)$modelName);
         return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 

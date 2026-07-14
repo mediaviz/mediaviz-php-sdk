@@ -13,27 +13,20 @@ class Photoupload {
     }
 
     public function uploadPhotoToMediaviz(
-        string $companyId,
-        string $userId,
-        string $projectTableName,
-        string $title,
         mixed $fileContent,
-        mixed $mimetype,
         mixed $filePath,
-        ?string $clientSideId = null,
-        ?string $blur = null,
-        ?string $colors = null,
-        ?string $faceRecognition = null,
-        ?string $imageDescribe = null,
-        ?string $imageClassification = null,
-        ?string $imageComparison = null,
-        ?string $size = null,
-        ?string $sourceResolutionX = null,
-        ?string $sourceResolutionY = null,
-        ?string $dateTaken = null,
-        ?string $latitude = null,
-        ?string $longitude = null,
-        ?string $ocr = null
+        mixed $mimetype,
+        mixed $companyId,
+        mixed $userId,
+        mixed $projectTableName,
+        mixed $blur,
+        mixed $colors,
+        mixed $faceRecognition,
+        mixed $imageClassification,
+        mixed $imageComparison,
+        mixed $imageDescribe,
+        mixed $ocr,
+        array $options = []
     ): mixed {
         $this->ctx->requireTokens();
         $baseUrl = $this->ctx->requireHost('photoUpload');
@@ -41,31 +34,31 @@ class Photoupload {
         $path = "/photo_upload";
         $headers = [
             'Content-Type: application/json',
-            'Authorization: ' . $accessToken,
-            'x-company-id: ' . $companyId,
-            'x-user-id: ' . $userId,
-            'x-project-table-name: ' . $projectTableName,
-            'x-title: ' . $title,
+            'Authorization: Bearer ' . $accessToken,
         ];
-        if ($clientSideId !== null) $headers[] = 'x-client-side-id: ' . $clientSideId;
-        if ($blur !== null) $headers[] = 'x-blur: ' . $blur;
-        if ($colors !== null) $headers[] = 'x-colors: ' . $colors;
-        if ($faceRecognition !== null) $headers[] = 'x-face-recognition: ' . $faceRecognition;
-        if ($imageDescribe !== null) $headers[] = 'x-image-describe: ' . $imageDescribe;
-        if ($imageClassification !== null) $headers[] = 'x-image-classification: ' . $imageClassification;
-        if ($imageComparison !== null) $headers[] = 'x-image-comparison: ' . $imageComparison;
-        if ($size !== null) $headers[] = 'x-size: ' . $size;
-        if ($sourceResolutionX !== null) $headers[] = 'x-source-resolution-x: ' . $sourceResolutionX;
-        if ($sourceResolutionY !== null) $headers[] = 'x-source-resolution-y: ' . $sourceResolutionY;
-        if ($dateTaken !== null) $headers[] = 'x-date-taken: ' . $dateTaken;
-        if ($latitude !== null) $headers[] = 'x-latitude: ' . $latitude;
-        if ($longitude !== null) $headers[] = 'x-longitude: ' . $longitude;
-        if ($ocr !== null) $headers[] = 'x-ocr: ' . $ocr;
-        $body = [
+        $body = array_filter([
             'file_content' => $fileContent,
-            'mimetype' => $mimetype,
             'file_path' => $filePath,
-        ];
+            'mimetype' => $mimetype,
+            'company_id' => $companyId,
+            'user_id' => $userId,
+            'project_table_name' => $projectTableName,
+            'blur' => $blur,
+            'colors' => $colors,
+            'face_recognition' => $faceRecognition,
+            'image_classification' => $imageClassification,
+            'image_comparison' => $imageComparison,
+            'image_describe' => $imageDescribe,
+            'ocr' => $ocr,
+            'client_side_id' => $options['clientSideId'] ?? null,
+            'format' => $options['format'] ?? null,
+            'size' => $options['size'] ?? null,
+            'source_resolution_x' => $options['sourceResolutionX'] ?? null,
+            'source_resolution_y' => $options['sourceResolutionY'] ?? null,
+            'date_taken' => $options['dateTaken'] ?? null,
+            'latitude' => $options['latitude'] ?? null,
+            'longitude' => $options['longitude'] ?? null,
+        ], fn($v) => $v !== null);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $baseUrl . $path);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -83,10 +76,9 @@ class Photoupload {
     }
 
     public function uploadPhoto(
-        string $projectTableName,
         string $companyId,
         string $userId,
-        int $photoIndex,
+        string $projectTableName,
         mixed $photo
     ): array {
         $this->ctx->requireTokens();
@@ -103,31 +95,31 @@ class Photoupload {
         $_baseUrl = $this->ctx->requireHost('photoUpload');
         $_headers = [
             'Content-Type: application/json',
-            'Authorization: ' . $this->ctx->accessToken,
-            'x-company-id: ' . $companyId,
-            'x-user-id: ' . $userId,
-            'x-project-table-name: ' . $projectTableName,
-            'x-title: ' . $photo['title'],
+            'Authorization: Bearer ' . $this->ctx->accessToken,
         ];
-        if (($photo['client_side_id'] ?? null) !== null) $_headers[] = 'x-client-side-id: ' . $photo['client_side_id'];
-        if (($template['blur'] ?? null) !== null) $_headers[] = 'x-blur: ' . $template['blur'];
-        if (($template['colors'] ?? null) !== null) $_headers[] = 'x-colors: ' . $template['colors'];
-        if (($template['face_recognition'] ?? null) !== null) $_headers[] = 'x-face-recognition: ' . $template['face_recognition'];
-        if (($template['image_describe'] ?? null) !== null) $_headers[] = 'x-image-describe: ' . $template['image_describe'];
-        if (($template['image_classification'] ?? null) !== null) $_headers[] = 'x-image-classification: ' . $template['image_classification'];
-        if (($template['image_comparison'] ?? null) !== null) $_headers[] = 'x-image-comparison: ' . $template['image_comparison'];
-        if (($photo['size'] ?? null) !== null) $_headers[] = 'x-size: ' . $photo['size'];
-        if (($photo['source_resolution_x'] ?? null) !== null) $_headers[] = 'x-source-resolution-x: ' . $photo['source_resolution_x'];
-        if (($photo['source_resolution_y'] ?? null) !== null) $_headers[] = 'x-source-resolution-y: ' . $photo['source_resolution_y'];
-        if (($photo['date_taken'] ?? null) !== null) $_headers[] = 'x-date-taken: ' . $photo['date_taken'];
-        if (($photo['latitude'] ?? null) !== null) $_headers[] = 'x-latitude: ' . $photo['latitude'];
-        if (($photo['longitude'] ?? null) !== null) $_headers[] = 'x-longitude: ' . $photo['longitude'];
-        if (($template['ocr'] ?? null) !== null) $_headers[] = 'x-ocr: ' . $template['ocr'];
-        $_body = [
-            'file_content' => $photo['file_content'],
-            'mimetype' => $photo['mimetype'],
-            'file_path' => $photo['file_path'],
-        ];
+        $_body = array_filter([
+            'file_content' => ($photo['file_content']) ?? null,
+            'file_path' => ($photo['file_path']) ?? null,
+            'mimetype' => ($photo['mimetype']) ?? null,
+            'company_id' => ($companyId) ?? null,
+            'user_id' => ($userId) ?? null,
+            'project_table_name' => ($projectTableName) ?? null,
+            'blur' => (((($template['body']['blur'] ?? $template['headers']['x-blur'] ?? null) === true || ($template['body']['blur'] ?? $template['headers']['x-blur'] ?? null) === 'true') ? 'true' : null)) ?? null,
+            'colors' => (((($template['body']['colors'] ?? $template['headers']['x-colors'] ?? null) === true || ($template['body']['colors'] ?? $template['headers']['x-colors'] ?? null) === 'true') ? 'true' : null)) ?? null,
+            'face_recognition' => (((($template['body']['face_recognition'] ?? $template['headers']['x-face-recognition'] ?? null) === true || ($template['body']['face_recognition'] ?? $template['headers']['x-face-recognition'] ?? null) === 'true') ? 'true' : null)) ?? null,
+            'image_classification' => (((($template['body']['image_classification'] ?? $template['headers']['x-image-classification'] ?? null) === true || ($template['body']['image_classification'] ?? $template['headers']['x-image-classification'] ?? null) === 'true') ? 'true' : null)) ?? null,
+            'image_comparison' => (((($template['body']['image_comparison'] ?? $template['headers']['x-image-comparison'] ?? null) === true || ($template['body']['image_comparison'] ?? $template['headers']['x-image-comparison'] ?? null) === 'true') ? 'true' : null)) ?? null,
+            'image_describe' => (((($template['body']['image_describe'] ?? $template['headers']['x-image-describe'] ?? null) === true || ($template['body']['image_describe'] ?? $template['headers']['x-image-describe'] ?? null) === 'true') ? 'true' : null)) ?? null,
+            'ocr' => (((($template['body']['ocr'] ?? $template['headers']['x-ocr'] ?? null) === true || ($template['body']['ocr'] ?? $template['headers']['x-ocr'] ?? null) === 'true') ? 'true' : null)) ?? null,
+            'client_side_id' => ($photo['client_side_id']) ?? null,
+            'format' => ($photo['format']) ?? null,
+            'size' => ($photo['size']) ?? null,
+            'source_resolution_x' => ($photo['source_resolution_x']) ?? null,
+            'source_resolution_y' => ($photo['source_resolution_y']) ?? null,
+            'date_taken' => ($photo['date_taken']) ?? null,
+            'latitude' => ($photo['latitude']) ?? null,
+            'longitude' => ($photo['longitude']) ?? null,
+        ], fn($v) => $v !== null);
         $_ch = curl_init();
         curl_setopt($_ch, CURLOPT_URL, $_baseUrl . "/photo_upload");
         curl_setopt($_ch, CURLOPT_RETURNTRANSFER, true);
