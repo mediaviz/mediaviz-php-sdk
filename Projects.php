@@ -11,8 +11,8 @@ class Projects {
 
     public function createProjectAndRun(
         string $name,
+        int $type,
         ?bool $private = null,
-        ?int $type = null,
         ?string $description = null,
         ?string $directory = null,
         ?int $photoUploadVector = null,

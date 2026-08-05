@@ -82,7 +82,9 @@ class MediaVizClient {
     public readonly Photos $photos;
     public readonly Projects $projects;
     public readonly Search $search;
+    public readonly Subscription $subscription;
     public readonly Users $users;
+    public readonly \MediaVizWebhooks\WebhookConsumer $webhooks;
 
     public function __construct(array $config = []) {
         $this->config = [
@@ -125,7 +127,9 @@ class MediaVizClient {
         $this->photos = new Photos($ctx);
         $this->projects = new Projects($ctx);
         $this->search = new Search($ctx);
+        $this->subscription = new Subscription($ctx);
         $this->users = new Users($ctx);
+        $this->webhooks = new \MediaVizWebhooks\WebhookConsumer($ctx, $this->subscription);
     }
 
     public function authenticate(): mixed {

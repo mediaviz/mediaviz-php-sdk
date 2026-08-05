@@ -28,6 +28,12 @@ class Person {
         return $this->ctx->client->request($path, 'PUT', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 
+    public function removePersonName(string $projectTableName, string $personId): mixed {
+        $this->ctx->requireTokens();
+        $path = "/api/v1/person/" . rawurlencode((string)$projectTableName) . "/remove_name/" . rawurlencode((string)$personId);
+        return $this->ctx->client->request($path, 'PUT', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
+    }
+
     public function combinePersons(
         string $projectTableName,
         string $destinationPersonId,
@@ -90,5 +96,11 @@ class Person {
         $this->ctx->requireTokens();
         $path = "/api/v1/person/" . rawurlencode((string)$projectTableName) . "/photo/" . rawurlencode((string)$photoId);
         return $this->ctx->client->request($path, 'GET', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
+    }
+
+    public function removePerson(string $projectTableName, string $personId): mixed {
+        $this->ctx->requireTokens();
+        $path = "/api/v1/person/" . rawurlencode((string)$projectTableName) . "/" . rawurlencode((string)$personId);
+        return $this->ctx->client->request($path, 'DELETE', $this->ctx->accessToken, $this->ctx->refreshToken)->data;
     }
 }
